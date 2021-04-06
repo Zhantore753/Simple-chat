@@ -10,12 +10,13 @@ function JoinBlock({onLogin}){
         if(!roomId || !userName){
             return alert('Все поля должны быть заполнены');
         }
-        setLoading(true);
-        await axios.post('/rooms',{
+        const obj = {
             roomId,
-            userName,
-        });
-        onLogin();
+            userName
+        }
+        setLoading(true);
+        await axios.post('/rooms', obj);
+        onLogin(obj);
     };
 
     return(

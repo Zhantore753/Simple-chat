@@ -21,7 +21,7 @@ app.get('/rooms', (req, res) => {
 
 app.post('/rooms', (req, res)=>{
     const {roomId, userName} = req.body;
-    if(!rooms.has()){
+    if(!rooms.has(roomId)){
         rooms.set(
             roomId, 
             new Map([
@@ -34,6 +34,13 @@ app.post('/rooms', (req, res)=>{
 });
 
 io.on('connection', socket => {
+    socket.on('ROOM:JOIN', ({roomId, userName}) => {
+        socket.join(roomId);
+        rooms.get(roomId).get('users').set(socket.id, userName);
+        const users = [...rooms.get(roomId).get('users').values()];
+        socket.broadcast.to(roomId).emit('ROOM:JOINED', users);
+    })
+
     console.log('user connected', socket.id);
 });
 
